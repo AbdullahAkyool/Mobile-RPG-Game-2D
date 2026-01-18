@@ -2,11 +2,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventoryItem : MonoBehaviour, IPoolable, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class InventoryItemController : MonoBehaviour, IPoolable, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [Header("Item Info")]
     [SerializeField] private ItemType itemType;
+    [SerializeField] private PoolKey itemPoolKey;
+    public PoolKey ItemPoolKey => itemPoolKey;
     private InventoryItemData inventoryItemData;
+    public InventoryItemData InventoryItemData => inventoryItemData;
     private int itemLevel = 0;
     public int ItemLevel { get => itemLevel; set { itemLevel = value; } }
 
@@ -144,11 +147,16 @@ public class InventoryItem : MonoBehaviour, IPoolable, IBeginDragHandler, IDragH
     public void OnEndDrag(PointerEventData eventData)
     {
         bool placed = false;
+        BaseGridController placedGrid = null;
 
         if (hasHover && hoverGrid != null)
         {
             hoverGrid.ClearPreview();
             placed = hoverGrid.TryPlaceItem(this, hoverAnchor);
+            if (placed)
+            {
+                placedGrid = hoverGrid;
+            }
         }
 
         if (!placed)
@@ -158,6 +166,19 @@ public class InventoryItem : MonoBehaviour, IPoolable, IBeginDragHandler, IDragH
             {
                 revertGrid.ClearPreview();
                 placed = revertGrid.TryPlaceItem(this, revertAnchor);
+                if (placed)
+                {
+                    placedGrid = revertGrid;
+                }
+            }
+        }
+
+        // Event tetikle: BasicGridController'dan CoordinateGridController'a transfer
+        if (placed && placedGrid != null && revertGrid != null && revertGrid != placedGrid)
+        {
+            if (revertGrid is BasicGridController && placedGrid is CoordinateGridController)
+            {
+                EventManager.OnItemTransferredToCoordinateGrid?.Invoke(revertGrid, placedGrid, this);
             }
         }
 
