@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: itemType
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 4822212246338866655, guid: c1036d5df1f33dc44bfb9b10dc915091, type: 3}
+      propertyPath: itemPoolKey
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6031229282712110987, guid: c1036d5df1f33dc44bfb9b10dc915091, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
