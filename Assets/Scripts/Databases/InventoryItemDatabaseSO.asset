@@ -40,9 +40,9 @@ MonoBehaviour:
       cooldownTime: 0
       itemIcon: {fileID: 3961218125512176384, guid: 0f76068eb951dd344aa589a5e4ddd823, type: 3}
     itemFootprintData:
-      width: 5
-      height: 5
-      filled: 01010101010101010101010101010101010101010101010101
+      width: 4
+      height: 4
+      filled: 01010101010101010101010101010101
   - itemType: 4
     itemLevels:
     - level: 0
@@ -100,9 +100,9 @@ MonoBehaviour:
       cooldownTime: 0
       itemIcon: {fileID: 7092843373178223792, guid: 4b4435e5b00fe6c489d8a17234b6a07c, type: 3}
     itemFootprintData:
-      width: 4
+      width: 2
       height: 4
-      filled: 00000101000001000001010001010000
+      filled: 0001000101010100
   - itemType: 10
     itemLevels:
     - level: 0
@@ -110,6 +110,6 @@ MonoBehaviour:
       cooldownTime: 0
       itemIcon: {fileID: -881924597204630757, guid: 1296ad9262ba39b489e6a54b0000d9c9, type: 3}
     itemFootprintData:
-      width: 4
-      height: 4
-      filled: 01010101010101010101010101010101
+      width: 3
+      height: 3
+      filled: 010101010101010101
