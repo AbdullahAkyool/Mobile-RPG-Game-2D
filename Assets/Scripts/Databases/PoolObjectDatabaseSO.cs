@@ -2,19 +2,21 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "PoolObjectDatabaseSO", menuName = "ScriptableObjects/Pool System/PoolObjectDatabaseSO", order = 1)]
+[CreateAssetMenu(fileName = "PoolObjectDatabaseSO", menuName = "ScriptableObjects/Pool System/Pool Object Database")]
 public class PoolObjectDatabaseSO : ScriptableObject
 {
     [SerializeField] private List<PoolObjectData> PoolObjects;
 
     public PoolObjectData GetPoolObjectData(PoolKey type)
     {
+        if (PoolObjects == null) return null;
         return PoolObjects.Find(po => po.Type == type);
     }
 
     public List<PoolObjectData> GetPoolObjectDataList()
     {
-        return PoolObjects;
+        // Null ise boş liste döndür (NullReferenceException önleme)
+        return PoolObjects ?? new List<PoolObjectData>();
     }
 }
 
@@ -33,7 +35,14 @@ public class PoolObjectData
 public enum PoolKey
 {
     None = 0,
-    TestA = 1,
-    TestB = 2,
-
+    Inventory_GamePad = 1,
+    Inventory_Scrediver = 2,
+    Inventory_Monitor = 3,
+    Inventory_WineGlass = 4,
+    Inventory_Knife = 5,
+    Inventory_Book = 6,
+    Inventory_Axe = 7,
+    Inventory_Hammer = 8,
+    Inventory_Bone = 9,
+    Inventory_Teapot = 10,
 }

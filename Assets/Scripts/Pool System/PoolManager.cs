@@ -20,6 +20,13 @@ public class PoolManager : MonoBehaviour //kendi pool sistemim
 
     void Awake()
     {
+        // Singleton pattern - sadece bir instance olmalı
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
@@ -49,6 +56,13 @@ public class PoolManager : MonoBehaviour //kendi pool sistemim
 
     private void InitializePools()
     {
+        // Veritabanı kontrolü
+        if (poolObjectDatabaseSO == null)
+        {
+            Debug.LogError("[PoolManager] PoolObjectDatabaseSO is not assigned!");
+            return;
+        }
+
         // Group by enum type and create pools
         HashSet<PoolKey> processedTypes = new HashSet<PoolKey>();
 
