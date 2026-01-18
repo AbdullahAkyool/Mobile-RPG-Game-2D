@@ -9,7 +9,7 @@ public class BasicGridController : BaseGridController
     [SerializeField] private Transform cellsRoot;
 
     // Doluluk
-    private InventoryItem[] occupied;
+    private InventoryItemController[] occupied;
     private readonly Dictionary<int, GridCellController> cells = new();
 
     // Hücre bilgileri
@@ -70,7 +70,7 @@ public class BasicGridController : BaseGridController
 
     private void RebuildOccupancy() // Doluluk Dizisini Yeniden Oluştur
     {
-        occupied = new InventoryItem[totalCells];
+        occupied = new InventoryItemController[totalCells];
     }
 
     private void AssignCells() // Hücreleri Atama
@@ -104,8 +104,7 @@ public class BasicGridController : BaseGridController
 
     public bool GetFirstEmptyCell(out Vector2Int cell)
     {
-        cell = default;
-        for (int i = 0; i < occupied.Length; i++)
+        for (int i = 0; i < totalCells; i++)
         {
             if (occupied[i] == null)
             {
@@ -113,6 +112,7 @@ public class BasicGridController : BaseGridController
                 return true;
             }
         }
+        cell = default;
         return false;
     }
 
@@ -121,7 +121,7 @@ public class BasicGridController : BaseGridController
     // BASE OVERRIDES
     // =========================================================
 
-    public override bool TryPlaceItem(InventoryItem item, Vector2Int anchorCell) // itemi Yerleştirmeyi Dene
+    public override bool TryPlaceItem(InventoryItemController item, Vector2Int anchorCell) // itemi Yerleştirmeyi Dene
     {
         int index = ToIndex(anchorCell);
         if (occupied[index] != null) return false;
@@ -133,7 +133,7 @@ public class BasicGridController : BaseGridController
         return true;
     }
 
-    public override void RemoveItem(InventoryItem item)
+    public override void RemoveItem(InventoryItemController item)
     {
         for (int i = 0; i < occupied.Length; i++)
         {
@@ -146,7 +146,7 @@ public class BasicGridController : BaseGridController
         item.ClearCurrentPlacement(this);
     }
 
-    public override void PreviewItemPlacement(InventoryItem item, Vector2Int anchorCell)
+    public override void PreviewItemPlacement(InventoryItemController item, Vector2Int anchorCell)
     {
         ClearPreview();
 
@@ -185,7 +185,46 @@ public class BasicGridController : BaseGridController
 
     public override RectTransform GetGridRectTransform() => gridRectTransform; // Grid'in RectTransform'ini al
 
-    private void ApplyItemVisual(InventoryItem item, int index) // itemi hücreye yerleştir
+    /// <summary>
+    /// Grid'deki tüm itemleri temizler ve pool'a geri gönderir
+    /// </summary>
+    public void ClearAllItems()
+    {
+        if (occupied == null) return;
+
+        for (int i = 0; i < occupied.Length; i++)
+        {
+            if (occupied[i] != null)
+            {
+                var item = occupied[i];
+                occupied[i] = null;
+                item.ClearCurrentPlacement(this);
+                
+                // Pool'a geri gönder
+                if (PoolManager.Instance != null)
+                {
+                    PoolManager.Instance.Despawn(item.ItemPoolKey, item);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Grid'deki item sayısını döndürür
+    /// </summary>
+    public int GetItemCount()
+    {
+        if (occupied == null) return 0;
+        
+        int count = 0;
+        for (int i = 0; i < occupied.Length; i++)
+        {
+            if (occupied[i] != null) count++;
+        }
+        return count;
+    }
+
+    private void ApplyItemVisual(InventoryItemController item, int index) // itemi hücreye yerleştir
     {
         var rt = item.GetComponent<RectTransform>();
         rt.SetParent(itemsRoot, false);
@@ -193,13 +232,35 @@ public class BasicGridController : BaseGridController
         rt.sizeDelta = new(cellWidth, cellHeight);
         rt.anchorMin = rt.anchorMax = rt.pivot = new(0.5f, 0.5f);
 
+        // Layout'u force rebuild et (eğer henüz hesaplanmamışsa)
+        if (horizontalLayout != null)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(gridRectTransform);
+        }
+
+        // Cell pozisyonunu hesapla
+        Vector3 targetPosition;
         if (cells.TryGetValue(index, out var cell))
         {
             var cellRt = cell.GetComponent<RectTransform>();
-            var local = itemsRoot.InverseTransformPoint(cellRt.position);
-            rt.localPosition = local;
+            // Cell'in world position'ını al ve itemsRoot'un local space'ine çevir
+            // itemsRoot ve grid aynı parent'ta olduğu için bu çalışır
+            Vector3 worldPos = cellRt.position;
+            targetPosition = itemsRoot.InverseTransformPoint(worldPos);
+        }
+        else
+        {
+            // Fallback: Pozisyonu manuel hesapla (cell bulunamazsa)
+            float paddingLeft = horizontalLayout != null ? horizontalLayout.padding.left : 0f;
+            float startX = -gridRectTransform.rect.width * 0.5f + paddingLeft + cellWidth * 0.5f;
+            float xPos = startX + index * (cellWidth + spacing);
+            // Grid'in local space'inde pozisyonu hesapla, sonra itemsRoot'a çevir
+            Vector3 gridLocalPos = new Vector3(xPos, 0f, 0f);
+            Vector3 worldPos = gridRectTransform.TransformPoint(gridLocalPos);
+            targetPosition = itemsRoot.InverseTransformPoint(worldPos);
         }
 
+        rt.localPosition = targetPosition;
         rt.localScale = Vector3.one;
         rt.localRotation = Quaternion.identity;
     }

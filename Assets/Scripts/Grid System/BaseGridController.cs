@@ -41,18 +41,18 @@ public abstract class BaseGridController : MonoBehaviour
     /// Öğeyi Grid'e Yerleştirmeyi Dene (Abstract)
     /// Her grid tipi kendi placement mantığını implement eder.
     /// </summary>
-    public abstract bool TryPlaceItem(InventoryItem item, Vector2Int anchorCell);
+    public abstract bool TryPlaceItem(InventoryItemController item, Vector2Int anchorCell);
 
     /// <summary>
     /// Öğeyi Grid'den Kaldır (Abstract)
     /// </summary>
-    public abstract void RemoveItem(InventoryItem item);
+    public abstract void RemoveItem(InventoryItemController item);
 
     /// <summary>
     /// Yerleşim Önizlemesi Göster (Abstract)
     /// Sürükleme sırasında hücreleri renklendirir.
     /// </summary>
-    public abstract void PreviewItemPlacement(InventoryItem item, Vector2Int anchorCell);
+    public abstract void PreviewItemPlacement(InventoryItemController item, Vector2Int anchorCell);
 
     /// <summary>
     /// Önizlemeyi Temizle (Abstract)
@@ -75,7 +75,7 @@ public abstract class BaseGridController : MonoBehaviour
     /// Grid'in Öğe Kabul Edip Etmediği (Opsiyonel Override)
     /// Bazı gridler sadece belirli item tiplerini kabul edebilir.
     /// </summary>
-    public virtual bool CanAcceptItem(InventoryItem item)
+    public virtual bool CanAcceptItem(InventoryItemController item)
     {
         return true; // Varsayılan: tüm item'ları kabul et
     }

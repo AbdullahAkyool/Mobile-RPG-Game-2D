@@ -34,7 +34,7 @@ public class CoordinateGridController : BaseGridController
 
 
     [Header("---- Doluluk ----")]
-    private InventoryItem[,] occupied; // Her hücrede hangi öğe var
+    private InventoryItemController[,] occupied; // Her hücrede hangi öğe var
     private readonly Dictionary<Vector2Int, GridCellController> cellsByCoord = new(); // Koordinattan hücre nesnesine erişim
     private readonly List<GridCellController> previewCells = new();  // Önizleme için renklendirilmiş hücreler listesi
 
@@ -224,7 +224,7 @@ public class CoordinateGridController : BaseGridController
         // Minimum değerleri garanti et
         if (columns < 1) columns = 1;
         if (rows < 1) rows = 1;
-        occupied = new InventoryItem[columns, rows];
+        occupied = new InventoryItemController[columns, rows];
     }
 
     // Hücre Koordinatlarını Ata
@@ -260,7 +260,7 @@ public class CoordinateGridController : BaseGridController
 
     // Öğeyi Grid'den Kaldır (BaseGridController override)
     // Belirtilen öğenin kapladığı tüm hücreleri boşaltır.
-    public override void RemoveItem(InventoryItem item)
+    public override void RemoveItem(InventoryItemController item)
     {
         if (item == null || occupied == null) return;
 
@@ -280,7 +280,7 @@ public class CoordinateGridController : BaseGridController
     // Sınır kontrolü ve çarpışma kontrolü yapar.
     // Başarılı olursa öğeyi hücrelere işler ve görselleştirir.
     /// <returns>Yerleştirme başarılı ise true, değilse false</returns>
-    public override bool TryPlaceItem(InventoryItem item, Vector2Int anchorCell)
+    public override bool TryPlaceItem(InventoryItemController item, Vector2Int anchorCell)
     {
         if (item == null) return false;
         if (occupied == null) RebuildOccupancy();
@@ -320,7 +320,35 @@ public class CoordinateGridController : BaseGridController
         ApplyItemVisual(item, anchorCell, w, h);
         // Öğeye yerleşim bilgisini kaydet
         item.SetCurrentPlacement(this, anchorCell);
+        
+        // Event tetikle: Item başka bir grid'den buraya taşındıysa
+        // InventoryItem'ın revertGrid'i varsa, bu bir transfer işlemidir
+        // Not: InventoryItem'da revertGrid bilgisi var, ama burada direkt kontrol edemiyoruz
+        // Bu yüzden event'i InventoryItem'dan tetiklemek daha iyi olabilir
+        // Şimdilik burada bırakıyoruz, InventoryItem'da da kontrol edeceğiz
+        
         return true;
+    }
+
+    /// <summary>
+    /// Grid'deki benzersiz item sayısını döndürür (aynı item birden fazla hücrede olsa bile 1 sayılır)
+    /// </summary>
+    public int GetUniqueItemCount()
+    {
+        if (occupied == null) return 0;
+
+        var uniqueItems = new System.Collections.Generic.HashSet<InventoryItemController>();
+        for (int y = 0; y < rows; y++)
+        {
+            for (int x = 0; x < columns; x++)
+            {
+                if (occupied[x, y] != null)
+                {
+                    uniqueItems.Add(occupied[x, y]);
+                }
+            }
+        }
+        return uniqueItems.Count;
     }
 
     /// Önizlemeyi Temizle (BaseGridController override)
@@ -341,7 +369,7 @@ public class CoordinateGridController : BaseGridController
     // - Herhangi bir kısım grid dışındaysa: sınır içi boş hücreler => Sarı, sınır içi dolu hücreler => Kırmızı
     // - Tamamen içerde ama herhangi bir çarpışma varsa: sınır içi ayak izi hücreleri => Kırmızı
     // - Tamamen içerde ve boş: sınır içi ayak izi hücreleri => Yeşil
-    public override void PreviewItemPlacement(InventoryItem item, Vector2Int anchorCell)
+    public override void PreviewItemPlacement(InventoryItemController item, Vector2Int anchorCell)
     {
         if (item == null) return;
         if (occupied == null) RebuildOccupancy();
@@ -414,7 +442,7 @@ public class CoordinateGridController : BaseGridController
     /// Öğenin Görselini Uygula
     /// Öğeyi grid üzerinde doğru pozisyon ve boyutta yerleştirir.
     /// RectTransform ayarlarını (pivot, anchor, sizeDelta, position) yapılandırır.
-    private void ApplyItemVisual(InventoryItem item, Vector2Int anchorCell, int w, int h)
+    private void ApplyItemVisual(InventoryItemController item, Vector2Int anchorCell, int w, int h)
     {
         var rt = item.GetComponent<RectTransform>();
         if (rt == null) return;
