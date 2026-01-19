@@ -26,12 +26,16 @@ public class InventoryItemAttackCycle : MonoBehaviour
     {
         EventManager.OnItemPlaced += HandleItemPlaced;
         EventManager.OnItemRemoved += HandleItemRemoved;
+        EventManager.OnEnemySpawned += HandleEnemySpawned;
+        EventManager.OnEnemyDied += HandleEnemyDied;
     }
 
     private void OnDisable()
     {
         EventManager.OnItemPlaced -= HandleItemPlaced;
         EventManager.OnItemRemoved -= HandleItemRemoved;
+        EventManager.OnEnemySpawned -= HandleEnemySpawned;
+        EventManager.OnEnemyDied -= HandleEnemyDied;
         KillAllTweens();
     }
 
@@ -51,6 +55,19 @@ public class InventoryItemAttackCycle : MonoBehaviour
         StopCooldown();
     }
 
+    private void HandleEnemySpawned(EnemyController enemy)
+    {
+        ResumeCooldown();
+    }
+
+    private void HandleEnemyDied(EnemyController enemy)
+    {
+        if (GameManager.Instance != null && GameManager.Instance.ActiveEnemies.Count == 0)
+        {
+            PauseCooldown();
+        }
+    }
+
     private void StartCooldown()
     {
         KillAllTweens();
@@ -67,6 +84,14 @@ public class InventoryItemAttackCycle : MonoBehaviour
             .DOFillAmount(0f, duration)
             .SetEase(Ease.Linear)
             .OnComplete(OnCooldownComplete);
+
+        if (GameManager.Instance != null && GameManager.Instance.ActiveEnemies.Count == 0)
+        {
+            if (cooldownTween != null && cooldownTween.IsActive())
+            {
+                cooldownTween.Pause();
+            }
+        }
     }
 
     private void OnCooldownComplete()
@@ -108,6 +133,22 @@ public class InventoryItemAttackCycle : MonoBehaviour
 
         if (view != null && view.OutlineImage != null)
             view.OutlineImage.fillAmount = 0f;
+    }
+
+    private void PauseCooldown()
+    {
+        if (cooldownTween != null && cooldownTween.IsActive() && cooldownTween.IsPlaying())
+        {
+            cooldownTween.Pause();
+        }
+    }
+
+    private void ResumeCooldown()
+    {
+        if (cooldownTween != null && cooldownTween.IsActive() && !cooldownTween.IsPlaying())
+        {
+            cooldownTween.Play();
+        }
     }
 
     private void KillAllTweens()
