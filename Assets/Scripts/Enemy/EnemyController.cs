@@ -1,11 +1,30 @@
 using UnityEngine;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : MonoBehaviour, IPoolable
 {
+    [Header("Identity")]
+    [SerializeField] private PoolKey poolKey;
+    public PoolKey PoolKey => poolKey;
+
     [Header("Health")]
     [SerializeField] private EnemyHealthController healthController;
 
     public bool IsDead => healthController == null || healthController.CurrentHealth <= 0;
+
+    public void OnSpawn()
+    {
+        if (healthController != null)
+        {
+            healthController.ResetHealth();
+        }
+
+        gameObject.SetActive(true);
+    }
+
+    public void OnDespawn()
+    {
+        gameObject.SetActive(false);
+    }
 
     public void TakeDamage(int damage)
     {
@@ -13,11 +32,10 @@ public class EnemyController : MonoBehaviour
         
         healthController.TakeDamage(damage);
 
-        ParticleEffectController particleEffect = PoolManager.Instance.Spawn<ParticleEffectController>(PoolKey.ParticleEffect_Hit);
-        
-        if (particleEffect != null)
+        ParticleEffectController hitParticle = PoolManager.Instance.Spawn<ParticleEffectController>(PoolKey.ParticleEffect_Hit);
+        if (hitParticle != null)
         {
-            particleEffect.transform.position = transform.position;
+            hitParticle.transform.position = transform.position;
         }
     }
 }

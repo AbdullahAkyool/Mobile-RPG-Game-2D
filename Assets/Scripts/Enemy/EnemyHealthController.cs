@@ -31,12 +31,28 @@ public class EnemyHealthController : MonoBehaviour
 
     private void Die()
     {
-        
+        ParticleEffectController dieParticle = PoolManager.Instance.Spawn<ParticleEffectController>(PoolKey.ParticleEffect_Die);
+        if (dieParticle != null)
+        {
+            dieParticle.transform.position = transform.position;
+        }
+
+        EnemyController enemy = GetComponentInParent<EnemyController>();
+        if (enemy != null && GameManager.Instance != null)
+        {
+            GameManager.Instance.OnEnemyDied(enemy);
+        }
     }
 
     public void UpdateHealthBar()
     {
         healthBarImage.fillAmount = (float)currentHealth / maxHealth;
         healthText.text = $"{currentHealth}";
+    }
+
+    public void ResetHealth()
+    {
+        currentHealth = maxHealth;
+        UpdateHealthBar();
     }
 }
