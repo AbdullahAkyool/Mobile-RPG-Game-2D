@@ -16,8 +16,11 @@ public class GameManager : MonoBehaviour
     private const int MAX_TRANSFER_INDEX = 3;
 
     [Header("Enemy Settings")]
-    [SerializeField] private List<EnemyController> enemies;
-    public List<EnemyController> Enemies => enemies;
+    [SerializeField] private List<EnemyController> activeEnemies = new List<EnemyController>();
+    [SerializeField] private Transform enemySpawnPoint;
+    [SerializeField] private PoolKey defaultEnemyPoolKey = PoolKey.Enemy_Basic;
+
+    public List<EnemyController> ActiveEnemies => activeEnemies;
 
     private void Awake()
     {
@@ -42,8 +45,14 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        // Layout'un hesaplanması için bir frame bekle
         StartCoroutine(SpawnRandomItemsDelayed());
+        StartCoroutine(SpawnInitialEnemyDelayed());
+    }
+
+    private IEnumerator SpawnInitialEnemyDelayed()
+    {
+        yield return null;
+        SpawnEnemy();
     }
 
     #region Inventory Item Spawning
@@ -122,16 +131,78 @@ public class GameManager : MonoBehaviour
 
     #region Enemy Management
 
+    [Header("Enemy Respawn Settings")]
+    [SerializeField] private float enemyRespawnDelay = 3f;
+
+    public void SpawnEnemy()
+    {
+        if (PoolManager.Instance == null)
+        {
+            Debug.LogError("[GameManager] PoolManager instance not found!");
+            return;
+        }
+
+        EnemyController enemy = PoolManager.Instance.Spawn<EnemyController>(defaultEnemyPoolKey);
+        if (enemy == null)
+        {
+            Debug.LogError($"[GameManager] Failed to spawn enemy from pool! PoolKey: {defaultEnemyPoolKey}");
+            return;
+        }
+
+        if (enemySpawnPoint != null)
+        {
+            enemy.transform.position = enemySpawnPoint.position;
+            enemy.transform.rotation = enemySpawnPoint.rotation;
+        }
+
+        ParticleEffectController spawnParticle = PoolManager.Instance.Spawn<ParticleEffectController>(PoolKey.ParticleEffect_Spawn);
+        if (spawnParticle != null)
+        {
+            Vector3 pos = enemy.transform.position;
+            pos.y -= .7f;
+            spawnParticle.transform.position = pos;
+        }
+
+        if (!activeEnemies.Contains(enemy))
+        {
+            activeEnemies.Add(enemy);
+        }
+
+        EventManager.OnEnemySpawned?.Invoke(enemy);
+    }
+
     public EnemyController GetRandomEnemy()
     {
-        if (enemies == null || enemies.Count == 0) return null;
+        if (activeEnemies == null || activeEnemies.Count == 0) return null;
 
-        int index = Random.Range(0, enemies.Count);
-        return enemies[index];
+        int index = Random.Range(0, activeEnemies.Count);
+        return activeEnemies[index];
     }
-    private void StartEnemies()
+
+    public void OnEnemyDied(EnemyController enemy)
     {
+        if (enemy == null) return;
 
+        if (activeEnemies.Contains(enemy))
+        {
+            activeEnemies.Remove(enemy);
+        }
+
+        EventManager.OnEnemyDied?.Invoke(enemy);
+
+        if (PoolManager.Instance != null)
+        {
+            PoolManager.Instance.Despawn(enemy.PoolKey, enemy);
+        }
+
+        StartCoroutine(SpawnNewEnemyAfterDelay(enemyRespawnDelay));
     }
+
+    private IEnumerator SpawnNewEnemyAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SpawnEnemy();
+    }
+
     #endregion
 }

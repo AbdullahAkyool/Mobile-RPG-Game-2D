@@ -12,4 +12,7 @@ public static class EventManager
     public static Action OnShouldSpawnNewItems;
 
     public static Action<AttackItemController> OnGetAttackItemForPlayer;
+
+    public static Action<EnemyController> OnEnemySpawned;
+    public static Action<EnemyController> OnEnemyDied;
 }
