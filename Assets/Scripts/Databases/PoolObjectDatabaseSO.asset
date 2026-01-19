@@ -70,16 +70,21 @@ MonoBehaviour:
     MaxSize: 30
   - Type: 200
     IsUIObject: 0
-    Prefab: {fileID: 4444783348424846717, guid: 55c2a0afff6969d4ea4942a42967241e, type: 3}
+    Prefab: {fileID: 8774503336678766036, guid: 586fdc212664ab4479134fcce57534db, type: 3}
     InitialSize: 10
     MaxSize: 30
   - Type: 201
     IsUIObject: 0
-    Prefab: {fileID: 8774503336678766036, guid: 586fdc212664ab4479134fcce57534db, type: 3}
+    Prefab: {fileID: 4444783348424846717, guid: 55c2a0afff6969d4ea4942a42967241e, type: 3}
     InitialSize: 10
     MaxSize: 30
   - Type: 202
     IsUIObject: 0
     Prefab: {fileID: 9146191762627925612, guid: 1f0887e2e0fe9c3408757d7a9a82fafa, type: 3}
+    InitialSize: 10
+    MaxSize: 30
+  - Type: 150
+    IsUIObject: 0
+    Prefab: {fileID: 3599234904156828032, guid: 66c12a308aba63740bdeeb85861473ff, type: 3}
     InitialSize: 10
     MaxSize: 30

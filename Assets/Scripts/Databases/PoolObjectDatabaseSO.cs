@@ -47,7 +47,11 @@ public enum PoolKey
     Inventory_Bone = 9,
     Inventory_Teapot = 10,
 
-    AttackItem = 100,     
+    AttackItem = 100,
+
+    Enemy_Basic = 150,
+    Enemy_Warrior = 151,
+    Enemy_Mage = 152,
 
     ParticleEffect_Hit = 200,
     ParticleEffect_Die = 201,
