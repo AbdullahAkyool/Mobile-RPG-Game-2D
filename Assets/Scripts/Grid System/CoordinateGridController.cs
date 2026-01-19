@@ -279,6 +279,7 @@ public class CoordinateGridController : BaseGridController
 
         // Öğenin yerleşim bilgisini temizle
         item.Placement.ClearCurrentPlacement(this);
+        EventManager.OnItemRemoved?.Invoke(this, item);
     }
 
     // Öğeyi Yerleştirmeyi Dene
@@ -327,6 +328,7 @@ public class CoordinateGridController : BaseGridController
         ApplyItemVisual(item, anchorCell, w, h);
         // Öğeye yerleşim bilgisini kaydet
         item.Placement.SetCurrentPlacement(this, anchorCell);
+        EventManager.OnItemPlaced?.Invoke(this, item);
 
         // Event tetikle: Item başka bir grid'den buraya taşındıysa
         // InventoryItem'ın revertGrid'i varsa, bu bir transfer işlemidir

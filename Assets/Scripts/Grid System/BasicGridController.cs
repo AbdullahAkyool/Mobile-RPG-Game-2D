@@ -132,6 +132,7 @@ public class BasicGridController : BaseGridController
         occupied[index] = item;
         ApplyItemVisual(item, index);
         item.Placement.SetCurrentPlacement(this, ToCell(index));
+        EventManager.OnItemPlaced?.Invoke(this, item);
         return true;
     }
 
@@ -146,6 +147,7 @@ public class BasicGridController : BaseGridController
             }
         }
         item.Placement.ClearCurrentPlacement(this);
+        EventManager.OnItemRemoved?.Invoke(this, item);
     }
 
     public override void PreviewItemPlacement(InventoryItemController item, Vector2Int anchorCell)
