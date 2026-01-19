@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6664251552508752445}
   - component: {fileID: 135800880515472280}
   - component: {fileID: 9136762997988962792}
+  - component: {fileID: 6193320091342994251}
   m_Layer: 5
   m_Name: Inventory Item - Base
   m_TagString: Untagged
@@ -70,9 +71,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iconImage: {fileID: 265228588466684750}
   outlineImage: {fileID: 4193693343190532379}
-  hoverHighlight: {fileID: 0}
-  selectedHighlight: {fileID: 0}
-  cooldownOverlay: {fileID: 0}
 --- !u!114 &135800880515472280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,6 +93,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d883a101e2c0d3f449dda783041f32d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemImage: {fileID: 265228588466684750}
+  grabReference: {fileID: 0}
+--- !u!114 &6193320091342994251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6043685830520888196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 803cefb17e130b44c9aac387d2b6a34a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &7278317971424434700
@@ -156,7 +168,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.72156864}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
