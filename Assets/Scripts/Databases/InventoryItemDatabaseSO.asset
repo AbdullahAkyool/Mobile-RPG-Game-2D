@@ -16,8 +16,8 @@ MonoBehaviour:
   - itemType: 1
     itemLevels:
     - level: 0
-      damagePower: 0
-      cooldownTime: 0
+      damagePower: 8
+      cooldownTime: 3
       itemIcon: {fileID: -7352510613199041625, guid: 42847bf6e72beac4fba550b14b9b6b5b, type: 3}
     itemFootprintData:
       width: 3
@@ -26,8 +26,8 @@ MonoBehaviour:
   - itemType: 2
     itemLevels:
     - level: 0
-      damagePower: 0
-      cooldownTime: 0
+      damagePower: 10
+      cooldownTime: 5
       itemIcon: {fileID: 9024488918866217279, guid: a3e4c093437e6e34990a4a5a9b2a7318, type: 3}
     itemFootprintData:
       width: 1
@@ -36,8 +36,8 @@ MonoBehaviour:
   - itemType: 3
     itemLevels:
     - level: 0
-      damagePower: 0
-      cooldownTime: 0
+      damagePower: 10
+      cooldownTime: 10
       itemIcon: {fileID: 3961218125512176384, guid: 0f76068eb951dd344aa589a5e4ddd823, type: 3}
     itemFootprintData:
       width: 4
@@ -46,8 +46,8 @@ MonoBehaviour:
   - itemType: 4
     itemLevels:
     - level: 0
-      damagePower: 0
-      cooldownTime: 0
+      damagePower: 2
+      cooldownTime: 5
       itemIcon: {fileID: -2846933441003410248, guid: 678f298e0bca56a40aaabfc20e79bbe7, type: 3}
     itemFootprintData:
       width: 1
@@ -56,8 +56,8 @@ MonoBehaviour:
   - itemType: 5
     itemLevels:
     - level: 0
-      damagePower: 0
-      cooldownTime: 0
+      damagePower: 15
+      cooldownTime: 5
       itemIcon: {fileID: 1448562113225423980, guid: 9f42866922610664b855b74add7835dd, type: 3}
     itemFootprintData:
       width: 2
@@ -66,8 +66,8 @@ MonoBehaviour:
   - itemType: 6
     itemLevels:
     - level: 0
-      damagePower: 0
-      cooldownTime: 0
+      damagePower: 3
+      cooldownTime: 7
       itemIcon: {fileID: -8955527055960736487, guid: bc725ab5fdd38204fad27bc5a8ef855d, type: 3}
     itemFootprintData:
       width: 4
@@ -76,8 +76,8 @@ MonoBehaviour:
   - itemType: 7
     itemLevels:
     - level: 0
-      damagePower: 0
-      cooldownTime: 0
+      damagePower: 15
+      cooldownTime: 10
       itemIcon: {fileID: 5150076738393484521, guid: edd2b8dcd0102a649bcc95f0d8883024, type: 3}
     itemFootprintData:
       width: 3
@@ -86,8 +86,8 @@ MonoBehaviour:
   - itemType: 8
     itemLevels:
     - level: 0
-      damagePower: 0
-      cooldownTime: 0
+      damagePower: 10
+      cooldownTime: 8
       itemIcon: {fileID: 9016526688720973019, guid: be930dc4c882eb341b6036e3343c6610, type: 3}
     itemFootprintData:
       width: 3
@@ -96,8 +96,8 @@ MonoBehaviour:
   - itemType: 9
     itemLevels:
     - level: 0
-      damagePower: 0
-      cooldownTime: 0
+      damagePower: 4
+      cooldownTime: 7
       itemIcon: {fileID: 7092843373178223792, guid: 4b4435e5b00fe6c489d8a17234b6a07c, type: 3}
     itemFootprintData:
       width: 2
@@ -106,8 +106,8 @@ MonoBehaviour:
   - itemType: 10
     itemLevels:
     - level: 0
-      damagePower: 0
-      cooldownTime: 0
+      damagePower: 7
+      cooldownTime: 7
       itemIcon: {fileID: -881924597204630757, guid: 1296ad9262ba39b489e6a54b0000d9c9, type: 3}
     itemFootprintData:
       width: 3

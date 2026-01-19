@@ -35,6 +35,7 @@ public class PoolObjectData
 public enum PoolKey
 {
     None = 0,
+
     Inventory_GamePad = 1,
     Inventory_Scrediver = 2,
     Inventory_Monitor = 3,
@@ -45,4 +46,10 @@ public enum PoolKey
     Inventory_Hammer = 8,
     Inventory_Bone = 9,
     Inventory_Teapot = 10,
+
+    AttackItem = 100,     
+
+    ParticleEffect_Hit = 200,
+    ParticleEffect_Die = 201,
+    ParticleEffect_Spawn = 202,
 }
