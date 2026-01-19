@@ -121,15 +121,17 @@ public class BasicGridController : BaseGridController
     // BASE OVERRIDES
     // =========================================================
 
-    public override bool TryPlaceItem(InventoryItemController item, Vector2Int anchorCell) // itemi Yerleştirmeyi Dene
+    public override bool TryPlaceItem(InventoryItemController item, Vector2Int anchorCell)
     {
-        int index = ToIndex(anchorCell);
+        if (anchorCell.y != 0) return false;
+        if (anchorCell.x < 0 || anchorCell.x >= totalCells) return false;
+
+        int index = anchorCell.x;
         if (occupied[index] != null) return false;
 
         occupied[index] = item;
         ApplyItemVisual(item, index);
-        item.SetCurrentPlacement(this, ToCell(index));
-
+        item.Placement.SetCurrentPlacement(this, ToCell(index));
         return true;
     }
 
@@ -143,7 +145,7 @@ public class BasicGridController : BaseGridController
                 break;
             }
         }
-        item.ClearCurrentPlacement(this);
+        item.Placement.ClearCurrentPlacement(this);
     }
 
     public override void PreviewItemPlacement(InventoryItemController item, Vector2Int anchorCell)
@@ -166,9 +168,15 @@ public class BasicGridController : BaseGridController
         previewCells.Clear();
     }
 
-    public override bool TryScreenPointToCell(Vector2 screenPoint, Camera eventCamera, out Vector2Int cell) // Ekran Noktasını Hücreye Çevir
+    public override bool TryScreenPointToCell(Vector2 screenPoint, Camera eventCamera, out Vector2Int cell)
     {
         cell = default;
+
+        if (gridRectTransform == null) return false;
+
+        // ✅ rect dışındaysa cell yok
+        if (!RectTransformUtility.RectangleContainsScreenPoint(gridRectTransform, screenPoint, eventCamera))
+            return false;
 
         if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(gridRectTransform, screenPoint, eventCamera, out var local))
             return false;
@@ -177,11 +185,14 @@ public class BasicGridController : BaseGridController
         float stepX = cellWidth + spacing;
 
         int index = Mathf.FloorToInt((local.x - startX) / stepX);
+
+        // içerideyiz ama index yine de taşabilir → clamp
         index = Mathf.Clamp(index, 0, totalCells - 1);
 
         cell = ToCell(index);
         return true;
     }
+
 
     public override RectTransform GetGridRectTransform() => gridRectTransform; // Grid'in RectTransform'ini al
 
@@ -198,12 +209,12 @@ public class BasicGridController : BaseGridController
             {
                 var item = occupied[i];
                 occupied[i] = null;
-                item.ClearCurrentPlacement(this);
-                
+                item.Placement.ClearCurrentPlacement(this);
+
                 // Pool'a geri gönder
                 if (PoolManager.Instance != null)
                 {
-                    PoolManager.Instance.Despawn(item.ItemPoolKey, item);
+                    PoolManager.Instance.Despawn(item.PoolKey, item);
                 }
             }
         }
@@ -215,7 +226,7 @@ public class BasicGridController : BaseGridController
     public int GetItemCount()
     {
         if (occupied == null) return 0;
-        
+
         int count = 0;
         for (int i = 0; i < occupied.Length; i++)
         {

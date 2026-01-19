@@ -10,6 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6031229282712110987}
   - component: {fileID: 4822212246338866655}
+  - component: {fileID: 6664251552508752445}
+  - component: {fileID: 135800880515472280}
+  - component: {fileID: 9136762997988962792}
   m_Layer: 5
   m_Name: Inventory Item - Base
   m_TagString: Untagged
@@ -51,9 +54,49 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemType: 0
-  itemImage: {fileID: 265228588466684750}
-  itemOutline: {fileID: 4193693343190532379}
-  grabReference: {fileID: 0}
+  poolKey: 0
+  startLevel: 0
+--- !u!114 &6664251552508752445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6043685830520888196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 878b0d3c2f7255d4fa761c8e0aed0f23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  iconImage: {fileID: 265228588466684750}
+  outlineImage: {fileID: 4193693343190532379}
+  hoverHighlight: {fileID: 0}
+  selectedHighlight: {fileID: 0}
+  cooldownOverlay: {fileID: 0}
+--- !u!114 &135800880515472280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6043685830520888196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ece52e89ef65ed498d1d91b88c8df08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9136762997988962792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6043685830520888196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d883a101e2c0d3f449dda783041f32d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7278317971424434700
 GameObject:
   m_ObjectHideFlags: 0
@@ -124,7 +167,7 @@ MonoBehaviour:
   m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 1
-  m_FillAmount: 1
+  m_FillAmount: 0
   m_FillClockwise: 1
   m_FillOrigin: 1
   m_UseSpriteMesh: 0

@@ -85,6 +85,13 @@ public class CoordinateGridController : BaseGridController
     {
         cell = default;
 
+        var rt = GetGridRectTransform();
+        if (rt == null) return false;
+
+        if (!RectTransformUtility.RectangleContainsScreenPoint(rt, screenPoint, eventCamera))
+            return false;
+        cell = default;
+
         // Layout cache'i güncelle (gerekirse)
         EnsureLayoutCache();
         if (!layoutCacheValid || gridRectTransform == null) return false;
@@ -271,7 +278,7 @@ public class CoordinateGridController : BaseGridController
                     occupied[x, y] = null;
 
         // Öğenin yerleşim bilgisini temizle
-        item.ClearCurrentPlacement(this);
+        item.Placement.ClearCurrentPlacement(this);
     }
 
     // Öğeyi Yerleştirmeyi Dene
@@ -286,7 +293,7 @@ public class CoordinateGridController : BaseGridController
         if (occupied == null) RebuildOccupancy();
         EnsureItemsRoot();
 
-        item.GetDimensions(out var w, out var h);
+        item.Model.GetDimensions(out var w, out var h);
 
         // === Sınır Kontrolü ===
         // Çapa sol-üst köşedir, tüm öğe grid içinde olmalı
@@ -299,7 +306,7 @@ public class CoordinateGridController : BaseGridController
         for (int ly = 0; ly < h; ly++)
             for (int lx = 0; lx < w; lx++)
             {
-                if (!item.IsFilledAtLocal(lx, ly)) continue; // Boş hücre, atla
+                if (!item.Model.IsFilled(lx, ly)) continue; // Boş hücre, atla
                 var gx = anchorCell.x + lx;
                 var gy = anchorCell.y + ly;
                 if (occupied[gx, gy] != null) return false; // Zaten dolu, yerleştiremeyiz
@@ -310,7 +317,7 @@ public class CoordinateGridController : BaseGridController
         for (int ly = 0; ly < h; ly++)
             for (int lx = 0; lx < w; lx++)
             {
-                if (!item.IsFilledAtLocal(lx, ly)) continue;
+                if (!item.Model.IsFilled(lx, ly)) continue;
                 var gx = anchorCell.x + lx;
                 var gy = anchorCell.y + ly;
                 occupied[gx, gy] = item;
@@ -319,14 +326,14 @@ public class CoordinateGridController : BaseGridController
         // Görsel yerleşimi uygula (pozisyon, boyut, ebeveyn)
         ApplyItemVisual(item, anchorCell, w, h);
         // Öğeye yerleşim bilgisini kaydet
-        item.SetCurrentPlacement(this, anchorCell);
-        
+        item.Placement.SetCurrentPlacement(this, anchorCell);
+
         // Event tetikle: Item başka bir grid'den buraya taşındıysa
         // InventoryItem'ın revertGrid'i varsa, bu bir transfer işlemidir
         // Not: InventoryItem'da revertGrid bilgisi var, ama burada direkt kontrol edemiyoruz
         // Bu yüzden event'i InventoryItem'dan tetiklemek daha iyi olabilir
         // Şimdilik burada bırakıyoruz, InventoryItem'da da kontrol edeceğiz
-        
+
         return true;
     }
 
@@ -376,7 +383,7 @@ public class CoordinateGridController : BaseGridController
 
         ClearPreview();
 
-        item.GetDimensions(out var w, out var h);
+        item.Model.GetDimensions(out var w, out var h);
         bool anyOutOfBounds = false; // Grid dışında kalan kısım var mı?
         bool anyOccupied = false;    // Dolu hücre var mı?
 
@@ -385,7 +392,7 @@ public class CoordinateGridController : BaseGridController
         for (int ly = 0; ly < h; ly++)
             for (int lx = 0; lx < w; lx++)
             {
-                if (!item.IsFilledAtLocal(lx, ly)) continue;
+                if (!item.Model.IsFilled(lx, ly)) continue;
                 var gx = anchorCell.x + lx;
                 var gy = anchorCell.y + ly;
 
@@ -404,7 +411,7 @@ public class CoordinateGridController : BaseGridController
         for (int ly = 0; ly < h; ly++)
             for (int lx = 0; lx < w; lx++)
             {
-                if (!item.IsFilledAtLocal(lx, ly)) continue;
+                if (!item.Model.IsFilled(lx, ly)) continue;
                 var gx = anchorCell.x + lx;
                 var gy = anchorCell.y + ly;
 
