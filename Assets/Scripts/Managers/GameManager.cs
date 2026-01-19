@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,13 +9,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] private InventoryItemDatabaseSO itemDatabase;
     public InventoryItemDatabaseSO ItemDatabase => itemDatabase;
 
-    [Header("Random Spawn Settings")]
+    [Header("Random Item Spawn Settings")]
     [SerializeField] private BasicGridController targetGrid;
     [SerializeField] private CoordinateGridController coordinateGrid;
-
-    [Header("Index System")]
     [SerializeField] private int transferIndex = 0;
     private const int MAX_TRANSFER_INDEX = 3;
+
+    [Header("Enemy Settings")]
+    [SerializeField] private List<EnemyController> enemies;
+    public List<EnemyController> Enemies => enemies;
 
     private void Awake()
     {
@@ -29,13 +32,11 @@ public class GameManager : MonoBehaviour
 
     private void OnEnable()
     {
-        // Event'leri dinle
         EventManager.OnItemTransferredToCoordinateGrid += OnItemTransferredToCoordinateGrid;
     }
 
     private void OnDisable()
     {
-        // Event'leri kaldır
         EventManager.OnItemTransferredToCoordinateGrid -= OnItemTransferredToCoordinateGrid;
     }
 
@@ -45,9 +46,10 @@ public class GameManager : MonoBehaviour
         StartCoroutine(SpawnRandomItemsDelayed());
     }
 
+    #region Inventory Item Spawning
     private IEnumerator SpawnRandomItemsDelayed()
     {
-        yield return null; // Bir frame bekle (layout hesaplanması için)
+        yield return null;
         SpawnRandomItems();
     }
 
@@ -55,30 +57,35 @@ public class GameManager : MonoBehaviour
     {
         if (targetGrid == null) return;
 
+        List<PoolKey> available = new();
+
+        // PoolKey aralığını sana göre ayarlayabilirsin
+        for (int i = 1; i <= 10; i++)
+            available.Add((PoolKey)i);
+
+        // Shuffle
+        for (int i = 0; i < available.Count; i++)
+        {
+            int r = Random.Range(i, available.Count);
+            (available[i], available[r]) = (available[r], available[i]);
+        }
+
+        // İlk 3 benzersiz item
         for (int i = 0; i < 3; i++)
         {
             if (!targetGrid.GetFirstEmptyCell(out var cell))
                 return;
 
-            PoolKey randomKey = (PoolKey)Random.Range(1, 10);
-            
-            var item = PoolManager.Instance.Spawn<InventoryItemController>(randomKey);
-            
-            if (item != null)
-            {
-                targetGrid.TryPlaceItem(item, cell);
-            }
+            var key = available[i];
+            var item = PoolManager.Instance.Spawn<InventoryItemController>(key);
+            targetGrid.TryPlaceItem(item, cell);
         }
     }
 
     private void OnItemTransferredToCoordinateGrid(BaseGridController fromGrid, BaseGridController toGrid, InventoryItemController item)
     {
-        // Index'i artır
         transferIndex++;
-        
-        Debug.Log($"[GameManager] Item transferred. Index: {transferIndex}/{MAX_TRANSFER_INDEX}");
 
-        // Index 3 olduğunda kontrol et
         if (transferIndex >= MAX_TRANSFER_INDEX)
         {
             CheckAndRespawnItems();
@@ -87,7 +94,6 @@ public class GameManager : MonoBehaviour
 
     private void CheckAndRespawnItems()
     {
-        // Koşul kontrolü: CoordinateGridController'da en az 3 item olmalı
         if (coordinateGrid == null)
         {
             Debug.LogWarning("[GameManager] CoordinateGridController not assigned!");
@@ -95,24 +101,37 @@ public class GameManager : MonoBehaviour
         }
 
         int coordinateItemCount = coordinateGrid.GetUniqueItemCount();
-        
+
         if (coordinateItemCount < 3)
         {
-            Debug.Log($"[GameManager] Not enough items in CoordinateGrid ({coordinateItemCount} < 3). Waiting...");
             return;
         }
 
         // BasicGridController'da itemler varsa temizle
         if (targetGrid != null && targetGrid.GetItemCount() > 0)
         {
-            Debug.Log("[GameManager] Clearing BasicGrid and respawning items...");
             targetGrid.ClearAllItems();
         }
 
-        // Index'i sıfırla
         transferIndex = 0;
 
-        // Yeni itemler spawn et
         SpawnRandomItems();
     }
+
+    #endregion
+
+    #region Enemy Management
+
+    public EnemyController GetRandomEnemy()
+    {
+        if (enemies == null || enemies.Count == 0) return null;
+
+        int index = Random.Range(0, enemies.Count);
+        return enemies[index];
+    }
+    private void StartEnemies()
+    {
+
+    }
+    #endregion
 }
